@@ -35,8 +35,8 @@ const ModelList = ({ selectedModels: controlledSelection, onSelectionChange }) =
       "allam-2-7b": "Allam 2 7B",
   
       // Optional Chat (if still enabled)
-      "deepseek-r1-distill-llama-70b": "DeepSeek R1 Distill",
-      "mistral-saba-24b": "Mistral Saba 24B",
+      //"deepseek-r1-distill-llama-70b": "DeepSeek R1 Distill",
+      //"mistral-saba-24b": "Mistral Saba 24B",
   
       // Default fallback
       "system": "System",
@@ -80,17 +80,19 @@ const ModelList = ({ selectedModels: controlledSelection, onSelectionChange }) =
     <div className="model-list">
       <h2>Select Models (Max 3)</h2>
       <div className="model-list-panel">
-        {models.map((model) => (
-          <label key={model.id} className="model-item">
-            <input
-              type="checkbox"
-              checked={selectedModels.includes(model.id)}
-              onChange={() => handleCheckboxChange(model.id)}
-            />
-            <span className="model-name">{getShortenedModelName(model.id)}</span>
-            <span className="model-owner">({model.owned_by})</span>
-          </label>
-        ))}
+      {models
+  .filter((model) => getShortenedModelName(model.id)) // only render chat models
+  .map((model) => (
+    <label key={model.id} className="model-item">
+      <input
+        type="checkbox"
+        checked={selectedModels.includes(model.id)}
+        onChange={() => handleCheckboxChange(model.id)}
+      />
+      <span className="model-name">{getShortenedModelName(model.id)}</span>
+      <span className="model-owner">({model.owned_by})</span>
+    </label>
+  ))}
       </div>
       {selectedModels.length > 0 && (
         <div className="selected-count">
