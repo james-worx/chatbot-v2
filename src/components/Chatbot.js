@@ -208,7 +208,7 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
   };
 
   const formatTokens = (tokens) => {
-    if (!tokens) return "N/A";
+    if (tokens === null || tokens === undefined) return "0";
     if (tokens < 1000) return `${tokens}`;
     return `${(tokens / 1000).toFixed(1)}k`;
   };
@@ -258,25 +258,21 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
             <span className="stat-value">{formatTime(queryStats.lastQueryTime)}</span>
           </div>
           <div className="stat-pill">
+            <span className="stat-label">↗ Input</span>
+            <span className="stat-value">{formatTokens(queryStats.lastPromptTokens)} tokens</span>
+          </div>
+          <div className="stat-pill">
+            <span className="stat-label">↙ Output</span>
+            <span className="stat-value">{formatTokens(queryStats.lastCompletionTokens)} tokens</span>
+          </div>
+          <div className="stat-pill">
             <span className="stat-label">📦 Chunks</span>
             <span className="stat-value">{queryStats.lastChunksSent || 0}</span>
           </div>
-          {queryStats.lastTokenUsage > 0 && (
-            <>
-              <div className="stat-pill">
-                <span className="stat-label">↗ In</span>
-                <span className="stat-value">{formatTokens(queryStats.lastPromptTokens)}</span>
-              </div>
-              <div className="stat-pill">
-                <span className="stat-label">↙ Out</span>
-                <span className="stat-value">{formatTokens(queryStats.lastCompletionTokens)}</span>
-              </div>
-            </>
-          )}
           {queryStats.totalQueries > 1 && (
             <div className="stat-pill stat-pill-total">
               <span className="stat-label">Σ {queryStats.totalQueries} queries</span>
-              <span className="stat-value">{formatTokens(queryStats.totalTokens)} tokens</span>
+              <span className="stat-value">{formatTokens(queryStats.totalTokens)} total tokens</span>
             </div>
           )}
         </div>

@@ -85,10 +85,16 @@ async function handleChat(body, groqClient, mem0ApiKey) {
         model,
       });
       const responseText = completion.choices[0].message.content;
+      const usage = completion.usage;
       responses.push({
         model,
         response: responseText,
         retrieved_memory: [],
+        usage: usage ? {
+          prompt_tokens: usage.prompt_tokens || 0,
+          completion_tokens: usage.completion_tokens || 0,
+          total_tokens: usage.total_tokens || 0,
+        } : null,
       });
     }
     return jsonResponse(responses);
@@ -121,10 +127,16 @@ async function handleChat(body, groqClient, mem0ApiKey) {
       model,
     });
     const responseText = completion.choices[0].message.content;
+    const usage = completion.usage;
     responses.push({
       model,
       response: responseText,
       retrieved_memory: retrievedMemory,
+      usage: usage ? {
+        prompt_tokens: usage.prompt_tokens || 0,
+        completion_tokens: usage.completion_tokens || 0,
+        total_tokens: usage.total_tokens || 0,
+      } : null,
     });
     await mem0Add(
       mem0ApiKey,
