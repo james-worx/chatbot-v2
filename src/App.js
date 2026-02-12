@@ -33,6 +33,10 @@ function App() {
     }
   };
 
+  const handleChatRemoved = (modelsToUnselect) => {
+    setSelectedModels((prev) => prev.filter((m) => !modelsToUnselect.includes(m)));
+  };
+
   return (
     <div className="App">
       <LoadingScreen isLoading={isLoading} />
@@ -75,10 +79,14 @@ function App() {
           </div>
 
           <div className="center-section">
-            <ModelList onSelectionChange={setSelectedModels} />
-            <ChatContainer 
+            <ModelList
+              selectedModels={selectedModels}
+              onSelectionChange={setSelectedModels}
+            />
+            <ChatContainer
               ref={chatContainerRef}
-              selectedModels={selectedModels} 
+              selectedModels={selectedModels}
+              onChatRemoved={handleChatRemoved}
             />
           </div>
         </>

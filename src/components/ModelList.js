@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "../App.css"; // Ensure you include your CSS file
 
-const ModelList = ({ onSelectionChange }) => {
+const ModelList = ({ selectedModels: controlledSelection, onSelectionChange }) => {
   const [models, setModels] = useState([]);
-  const [selectedModels, setSelectedModels] = useState([]);
+  const [internalSelected, setInternalSelected] = useState([]);
+  const selectedModels = controlledSelection !== undefined ? controlledSelection : internalSelected;
 
   // Function to convert long model names to shortened versions
   const getShortenedModelName = (modelId) => {
@@ -59,24 +60,20 @@ const ModelList = ({ onSelectionChange }) => {
   }, []);
 
   const handleCheckboxChange = (id) => {
-    setSelectedModels((prevSelected) => {
-      if (prevSelected.includes(id)) {
-        // If already selected, remove it
-        const updatedSelection = prevSelected.filter((modelId) => modelId !== id);
-        onSelectionChange(updatedSelection);
-        return updatedSelection;
-      } else {
-        // If not selected, check if we can add more
-        if (prevSelected.length >= 3) {
-          alert("You can only select up to 3 models at a time.");
-          return prevSelected;
-        } else {
-          const updatedSelection = [...prevSelected, id];
-          onSelectionChange(updatedSelection);
-          return updatedSelection;
-        }
+    const prevSelected = selectedModels;
+    if (prevSelected.includes(id)) {
+      const updatedSelection = prevSelected.filter((modelId) => modelId !== id);
+      onSelectionChange(updatedSelection);
+      if (controlledSelection === undefined) setInternalSelected(updatedSelection);
+    } else {
+      if (prevSelected.length >= 3) {
+        alert("You can only select up to 3 models at a time.");
+        return;
       }
-    });
+      const updatedSelection = [...prevSelected, id];
+      onSelectionChange(updatedSelection);
+      if (controlledSelection === undefined) setInternalSelected(updatedSelection);
+    }
   };
 
   return (

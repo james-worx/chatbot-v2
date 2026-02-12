@@ -2,10 +2,12 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from "rea
 import Chatbot from "./Chatbot";
 import "../App.css";
 
-const ChatContainer = forwardRef(({ selectedModels }, ref) => {
+const ChatContainer = forwardRef(({ selectedModels, onChatRemoved }, ref) => {
   const [chatInstances, setChatInstances] = useState([{ id: 1, name: "Chat 1", assignedModels: [] }]);
   const [inputs, setInputs] = useState({ 1: "" });
   const [sendMessages, setSendMessages] = useState({});
+  const [editingNameId, setEditingNameId] = useState(null);
+  const [maxReachedHint, setMaxReachedHint] = useState(false);
 
   // Expose methods to parent component
   useImperativeHandle(ref, () => ({
@@ -23,46 +25,71 @@ const ChatContainer = forwardRef(({ selectedModels }, ref) => {
     }
   }));
 
-  // Distribute selected models across chat instances
+  // One model per chat: add new chats when more models are selected (max 3 chats)
   useEffect(() => {
     if (selectedModels.length === 0) {
-      // Clear all model assignments when no models are selected
-      setChatInstances(prev => prev.map(chat => ({ ...chat, assignedModels: [] })));
+      setChatInstances((prev) => prev.map((chat) => ({ ...chat, assignedModels: [] })));
       return;
     }
 
-    setChatInstances(prev => {
-      const updatedChats = [...prev];
-      
-      // Clear all assignments first
-      updatedChats.forEach(chat => {
-        chat.assignedModels = [];
-      });
+    const targetChatCount = Math.min(selectedModels.length, 3);
 
-      // Distribute models across chats
-      selectedModels.forEach((model, index) => {
-        const chatIndex = index % updatedChats.length;
-        updatedChats[chatIndex].assignedModels.push(model);
-      });
+    setChatInstances((prev) => {
+      const prevIds = new Set(prev.map((c) => c.id));
+      let updated = [...prev];
 
-      return updatedChats;
+      while (updated.length < targetChatCount) {
+        const newId = Math.max(0, ...updated.map((c) => c.id)) + 1;
+        updated.push({
+          id: newId,
+          name: `Chat ${updated.length + 1}`,
+          assignedModels: [],
+        });
+      }
+
+      const newChatIds = updated.filter((c) => !prevIds.has(c.id)).map((c) => c.id);
+      if (newChatIds.length > 0) {
+        setInputs((prevInputs) => {
+          const next = { ...prevInputs };
+          newChatIds.forEach((id) => (next[id] = ""));
+          return next;
+        });
+      }
+
+      return updated.map((chat, i) => ({
+        ...chat,
+        assignedModels: i < selectedModels.length ? [selectedModels[i]] : [],
+      }));
     });
   }, [selectedModels]);
 
   const addNewChat = () => {
     if (chatInstances.length >= 3) {
-      alert("You can only have up to 3 chats at a time.");
+      setMaxReachedHint(true);
+      setTimeout(() => setMaxReachedHint(false), 2500);
       return;
     }
-    const newId = chatInstances.length + 1;
-    setChatInstances([...chatInstances, { id: newId, name: `Chat ${newId}`, assignedModels: [] }]);
+    const newId = Math.max(0, ...chatInstances.map((c) => c.id)) + 1;
+    setChatInstances([...chatInstances, { id: newId, name: `Chat ${chatInstances.length + 1}`, assignedModels: [] }]);
     setInputs(prev => ({ ...prev, [newId]: "" }));
+  };
+
+  const updateChatName = (chatId, newName) => {
+    const trimmed = newName.trim() || `Chat ${chatId}`;
+    setChatInstances((prev) =>
+      prev.map((c) => (c.id === chatId ? { ...c, name: trimmed } : c))
+    );
+    setEditingNameId(null);
   };
 
   const removeChat = (chatId) => {
     if (chatInstances.length > 1) {
-      setChatInstances(chatInstances.filter(chat => chat.id !== chatId));
-      setInputs(prev => {
+      const chatToRemove = chatInstances.find((c) => c.id === chatId);
+      if (chatToRemove?.assignedModels?.length && onChatRemoved) {
+        onChatRemoved(chatToRemove.assignedModels);
+      }
+      setChatInstances(chatInstances.filter((chat) => chat.id !== chatId));
+      setInputs((prev) => {
         const newInputs = { ...prev };
         delete newInputs[chatId];
         return newInputs;
@@ -116,13 +143,41 @@ const ChatContainer = forwardRef(({ selectedModels }, ref) => {
         {chatInstances.map((chat) => (
           <div key={chat.id} className="chat-instance">
             <div className="chat-header">
-              <div>
-                <h3>{chat.name}</h3>
+              <div className="chat-title-row">
+                {editingNameId === chat.id ? (
+                  <input
+                    className="chat-name-input"
+                    type="text"
+                    value={chat.name}
+                    onChange={(e) =>
+                      setChatInstances((prev) =>
+                        prev.map((c) =>
+                          c.id === chat.id ? { ...c, name: e.target.value } : c
+                        )
+                      )}
+                    onBlur={() => updateChatName(chat.id, chat.name)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") updateChatName(chat.id, chat.name);
+                      if (e.key === "Escape") setEditingNameId(null);
+                    }}
+                    autoFocus
+                    aria-label="Chat name"
+                  />
+                ) : (
+                  <h3
+                    className="chat-name"
+                    onClick={() => setEditingNameId(chat.id)}
+                    title="Click to rename"
+                  >
+                    {chat.name}
+                  </h3>
+                )}
                 {chatInstances.length > 1 && (
-                  <button 
+                  <button
                     className="remove-chat-btn"
                     onClick={() => removeChat(chat.id)}
                     title="Remove chat"
+                    aria-label="Remove chat"
                   >
                     ×
                   </button>
@@ -138,33 +193,45 @@ const ChatContainer = forwardRef(({ selectedModels }, ref) => {
                 </div>
               )}
             </div>
-            <Chatbot 
-              selectedModels={chat.assignedModels} 
-              onSendMessage={sendMessages[chat.id] ? {
-                message: sendMessages[chat.id].message,
-                omitMemory: sendMessages[chat.id].omitMemory,
-                onSent: () => handleMessageSent(chat.id)
-              } : null}
+            <Chatbot
+              selectedModels={chat.assignedModels}
+              onSendMessage={
+                sendMessages[chat.id]
+                  ? {
+                      message: sendMessages[chat.id].message,
+                      omitMemory: sendMessages[chat.id].omitMemory,
+                      onSent: () => handleMessageSent(chat.id),
+                    }
+                  : null
+              }
             />
             <div className="input-area">
-              <input 
-                type="text" 
-                value={inputs[chat.id] || ""} 
+              <input
+                type="text"
+                value={inputs[chat.id] || ""}
                 onChange={(e) => handleInputChange(chat.id, e.target.value)}
                 onKeyPress={(e) => handleKeyPress(chat.id, e)}
-                placeholder="Type a message or paste a YouTube link..." 
+                placeholder="Type a message or paste a YouTube link..."
               />
               <button onClick={() => handleSendMessage(chat.id)}>Send</button>
             </div>
           </div>
         ))}
       </div>
-      
-      <button 
-        className={`add-chat-btn ${chatInstances.length >= 3 ? 'disabled' : ''}`}
+
+      {maxReachedHint && (
+        <div className="max-chats-hint" role="status">
+          Maximum of 3 chats. Remove one to add another.
+        </div>
+      )}
+
+      <button
+        type="button"
+        className={`add-chat-btn ${chatInstances.length >= 3 ? "disabled" : ""}`}
         onClick={addNewChat}
         disabled={chatInstances.length >= 3}
-        title={chatInstances.length >= 3 ? "Maximum 3 chats allowed" : "Add new chat"}
+        title={chatInstances.length >= 3 ? "Maximum 3 chats" : "New chat"}
+        aria-label="New chat"
       >
         +
       </button>
