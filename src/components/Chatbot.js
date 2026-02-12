@@ -251,24 +251,36 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
         {loading && <div className="loading">Bot is thinking...</div>}
       </div>
       
-      <div className="query-stats">
-        {queryStats.lastQueryTime && (
-          <div className="stats-row">
-            <span className="stat-label">Last Query:</span>
+      {queryStats.lastQueryTime && (
+        <div className="query-stats">
+          <div className="stat-pill">
+            <span className="stat-label">⏱ Time</span>
             <span className="stat-value">{formatTime(queryStats.lastQueryTime)}</span>
-            <span className="stat-label">Chunks:</span>
+          </div>
+          <div className="stat-pill">
+            <span className="stat-label">📦 Chunks</span>
             <span className="stat-value">{queryStats.lastChunksSent || 0}</span>
           </div>
-        )}
-        {queryStats.lastTokenUsage && (
-          <div className="stats-row">
-            <span className="stat-label">Input Tokens:</span>
-            <span className="stat-value">{formatTokens(queryStats.lastPromptTokens)}</span>
-            <span className="stat-label">Output Tokens:</span>
-            <span className="stat-value">{formatTokens(queryStats.lastCompletionTokens)}</span>
-          </div>
-        )}
-      </div>
+          {queryStats.lastTokenUsage > 0 && (
+            <>
+              <div className="stat-pill">
+                <span className="stat-label">↗ In</span>
+                <span className="stat-value">{formatTokens(queryStats.lastPromptTokens)}</span>
+              </div>
+              <div className="stat-pill">
+                <span className="stat-label">↙ Out</span>
+                <span className="stat-value">{formatTokens(queryStats.lastCompletionTokens)}</span>
+              </div>
+            </>
+          )}
+          {queryStats.totalQueries > 1 && (
+            <div className="stat-pill stat-pill-total">
+              <span className="stat-label">Σ {queryStats.totalQueries} queries</span>
+              <span className="stat-value">{formatTokens(queryStats.totalTokens)} tokens</span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
