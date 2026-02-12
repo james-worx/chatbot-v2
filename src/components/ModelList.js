@@ -14,7 +14,6 @@ const ModelList = ({ selectedModels: controlledSelection, onSelectionChange }) =
       "groq/compound-mini": "Groq Compound Mini",
   
       // Core Chat Models
-      "gemma2-9b-it": "Gemma 2-9B IT",
       "llama-3.1-8b-instant": "Llama 3.1-8B Instant",
       "llama-3.3-70b-versatile": "Llama 3.3-70B Versatile",
       "meta-llama/llama-4-maverick-17b-128e-instruct": "Llama 4 Maverick 17B",
