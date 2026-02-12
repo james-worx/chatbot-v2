@@ -253,28 +253,18 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
       
       {queryStats.lastQueryTime && (
         <div className="query-stats">
-          <div className="stat-pill">
-            <span className="stat-label">⏱ Time</span>
+          <div className="stats-row">
+            <span className="stat-label">Time:</span>
             <span className="stat-value">{formatTime(queryStats.lastQueryTime)}</span>
-          </div>
-          <div className="stat-pill">
-            <span className="stat-label">↗ Input</span>
-            <span className="stat-value">{formatTokens(queryStats.lastPromptTokens)} tokens</span>
-          </div>
-          <div className="stat-pill">
-            <span className="stat-label">↙ Output</span>
-            <span className="stat-value">{formatTokens(queryStats.lastCompletionTokens)} tokens</span>
-          </div>
-          <div className="stat-pill">
-            <span className="stat-label">📦 Chunks</span>
+            <span className="stat-label">Chunks:</span>
             <span className="stat-value">{queryStats.lastChunksSent || 0}</span>
           </div>
-          {queryStats.totalQueries > 1 && (
-            <div className="stat-pill stat-pill-total">
-              <span className="stat-label">Σ {queryStats.totalQueries} queries</span>
-              <span className="stat-value">{formatTokens(queryStats.totalTokens)} total tokens</span>
-            </div>
-          )}
+          <div className="stats-row">
+            <span className="stat-label">Input Tokens:</span>
+            <span className="stat-value">{formatTokens(queryStats.lastPromptTokens)}</span>
+            <span className="stat-label">Output Tokens:</span>
+            <span className="stat-value">{formatTokens(queryStats.lastCompletionTokens)}</span>
+          </div>
         </div>
       )}
     </div>
