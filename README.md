@@ -27,6 +27,18 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
+### Deploy on Netlify
+
+The app and API run together on Netlify: the React app is built and served as static files, and `/api/chat` and `/api/youtube-transcript` are handled by a serverless function.
+
+1. Push the repo to GitHub and connect the site in [Netlify](https://app.netlify.com).
+2. Build command: `npm run build` (default from `netlify.toml`).
+3. In **Site settings → Environment variables**, add:
+   - `GROQ_API_KEY` – your Groq API key  
+   - `MEM0_API_KEY` – your Mem0 API key  
+
+No `REACT_APP_API_URL` is needed in production; the frontend uses relative `/api/*` URLs. For **local dev** with the Flask backend, set `REACT_APP_API_URL=http://localhost:5001` in `.env`.
+
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ### `npm run eject`

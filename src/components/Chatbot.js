@@ -94,6 +94,7 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
     addMessage(message, "user");
 
     const startTime = Date.now();
+    const apiBase = process.env.REACT_APP_API_URL || "";
 
     const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
     const youtubeMatch = message.match(youtubeRegex);
@@ -103,7 +104,7 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
       const videoId = youtubeMatch[1];
       addMessage("Fetching transcript...", "system");
 
-      const response = await axios.post("http://localhost:5001/api/youtube-transcript", {
+      const response = await axios.post(`${apiBase}/api/youtube-transcript`, {
         videoId,
       });
 
@@ -115,7 +116,7 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
         addMessage(summarizationPrompt, "system"); // Add as a system message (NOT MEMORY)
 
         // Now send summarization prompt to the chatbot
-        const chatResponse = await axios.post("http://localhost:5001/api/chat", {
+        const chatResponse = await axios.post(`${apiBase}/api/chat`, {
           message: summarizationPrompt,
           models: selectedModels,
           omitMemory: omitMemory
@@ -152,7 +153,7 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
 
     // Default behavior for non-YouTube messages
     try {
-      const response = await axios.post("http://localhost:5001/api/chat", {
+      const response = await axios.post(`${apiBase}/api/chat`, {
         message,
         models: selectedModels,
         omitMemory: omitMemory
