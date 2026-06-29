@@ -210,7 +210,7 @@ const ChatContainer = forwardRef(({ selectedModels, onChatRemoved }, ref) => {
                 type="text"
                 value={inputs[chat.id] || ""}
                 onChange={(e) => handleInputChange(chat.id, e.target.value)}
-                onKeyPress={(e) => handleKeyPress(chat.id, e)}
+                onKeyDown={(e) => handleKeyPress(chat.id, e)}
                 placeholder="Type a message or paste a YouTube link..."
               />
               <button onClick={() => handleSendMessage(chat.id)}>Send</button>

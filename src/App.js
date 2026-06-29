@@ -45,7 +45,7 @@ function App() {
         <>
           <div className="header-container">
             <h1>Ask AI</h1>
-            <p> powered by ChatGPT, Groq accelerated TPU inference, Mem0 long-term memory</p>
+            <p>powered by Groq accelerated inference, Mem0 long-term memory</p>
           </div>
           
           <div className="global-input-container">
@@ -54,7 +54,7 @@ function App() {
                 type="text" 
                 value={globalInput} 
                 onChange={(e) => setGlobalInput(e.target.value)}
-                onKeyPress={handleGlobalKeyPress}
+                onKeyDown={handleGlobalKeyPress}
                 placeholder="Ask all chatbots simultaneously..." 
                 className="global-input"
               />
