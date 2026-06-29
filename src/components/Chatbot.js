@@ -23,34 +23,25 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
   const getCompanyImage = (modelName) => {
     const companyMap = {
       // Groq Systems
-      "compound-beta": "groq",
-      
-      // Production Models
-      "gemma2-9b-it": "gemma",
+      "groq/compound": "groq",
+      "groq/compound-mini": "groq",
+
+      // Meta Llama
       "llama-3.1-8b-instant": "llama",
       "llama-3.3-70b-versatile": "llama",
-      "meta-llama/llama-guard-4-12b": "llama",
-      
-      // Preview Models
-      "deepseek-r1-distill-llama-70b": "deepseek",
       "meta-llama/llama-4-maverick-17b-128e-instruct": "llama",
       "meta-llama/llama-4-scout-17b-16e-instruct": "llama",
-      "meta-llama/llama-prompt-guard-2-22m": "llama",
-      "meta-llama/llama-prompt-guard-2-86m": "llama",
-      "mistral-saba-24b": "mixtral",
+
+      // OpenAI OSS (Groq Hosted)
+      "openai/gpt-oss-120b": "openai",
+      "openai/gpt-oss-20b": "openai",
+
+      // Moonshot AI (no dedicated logo — falls back to system)
+      "moonshotai/kimi-k2-instruct": "system",
+
+      // Alibaba Cloud
       "qwen/qwen3-32b": "qwen",
-      
-      // Legacy/Deprecated Models (keeping for backward compatibility)
-      "llama-guard-3-8b": "llama",
-      "llama3-70b-8192": "llama",
-      "llama3-8b-8192": "llama",
-      "llama-3.2-1b-preview": "llama",
-      "llama-3.3-70b-specdec": "llama",
-      "llama-3.2-90b-vision-preview": "llama",
-      "llama-3.2-11b-vision-preview": "llama",
-      "mixtral-8x7b-32768": "mixtral",
-      "llama-3.2-3b-preview": "llama",
-      
+
       // Default fallback
       "system": "system",
       "user": "system"
