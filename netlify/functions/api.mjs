@@ -65,6 +65,7 @@ async function handleChat(body, groqClient, mem0ApiKey) {
   const message = body.message || "";
   const selectedModels = body.models || [];
   const user_id = body.user_id || "default_user";
+  const omitMemory = body.omitMemory === true;
 
   if (!message) return jsonResponse({ error: "Message is required" }, 400);
   if (!selectedModels.length)
@@ -95,12 +96,13 @@ async function handleChat(body, groqClient, mem0ApiKey) {
           completion_tokens: usage.completion_tokens || 0,
           total_tokens: usage.total_tokens || 0,
         } : null,
+        chunks_sent: 0,
       });
     }
     return jsonResponse(responses);
   }
 
-  const pastMemories = await mem0Search(mem0ApiKey, message, user_id);
+  const pastMemories = omitMemory ? [] : await mem0Search(mem0ApiKey, message, user_id);
   const history = [];
   const retrievedMemory = [];
   if (pastMemories && pastMemories.length) {
@@ -137,15 +139,18 @@ async function handleChat(body, groqClient, mem0ApiKey) {
         completion_tokens: usage.completion_tokens || 0,
         total_tokens: usage.total_tokens || 0,
       } : null,
+      chunks_sent: retrievedMemory.length,
     });
-    await mem0Add(
-      mem0ApiKey,
-      [
-        { role: "user", content: message },
-        { role: "assistant", content: responseText },
-      ],
-      user_id
-    );
+    if (!omitMemory) {
+      await mem0Add(
+        mem0ApiKey,
+        [
+          { role: "user", content: message },
+          { role: "assistant", content: responseText },
+        ],
+        user_id
+      );
+    }
   }
   return jsonResponse(responses);
 }
