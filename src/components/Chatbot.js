@@ -96,62 +96,6 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
     const startTime = Date.now();
     const apiBase = process.env.REACT_APP_API_URL || "";
 
-    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
-    const youtubeMatch = message.match(youtubeRegex);
-
-    // Handle YouTube transcript
-    if (youtubeMatch) {
-      const videoId = youtubeMatch[1];
-      addMessage("Fetching transcript...", "system");
-
-      const response = await axios.post(`${apiBase}/api/youtube-transcript`, {
-        videoId,
-      });
-
-      if (response.data.transcript) {
-        const transcript = response.data.transcript;
-
-        // Directly pass transcript into the summarization prompt without storing it as memory
-        const summarizationPrompt = `Summarize the key points of this YouTube video transcript:\n\n${transcript}`;
-        addMessage(summarizationPrompt, "system"); // Add as a system message (NOT MEMORY)
-
-        // Now send summarization prompt to the chatbot
-        const chatResponse = await axios.post(`${apiBase}/api/chat`, {
-          message: summarizationPrompt,
-          models: selectedModels,
-          omitMemory: omitMemory
-        });
-
-        let totalTokens = 0;
-        let totalPromptTokens = 0;
-        let totalCompletionTokens = 0;
-        let totalChunksSent = 0;
-        
-        chatResponse.data.forEach((botResponse) => {
-          addMessage(botResponse.response, botResponse.model);
-          
-          // Sum up token usage and chunks from all models
-          if (botResponse.usage) {
-            totalTokens += botResponse.usage.total_tokens || 0;
-            totalPromptTokens += botResponse.usage.prompt_tokens || 0;
-            totalCompletionTokens += botResponse.usage.completion_tokens || 0;
-          }
-          if (botResponse.chunks_sent) {
-            totalChunksSent += botResponse.chunks_sent;
-          }
-        });
-
-        const queryTime = Date.now() - startTime;
-        updateQueryStats(queryTime, totalTokens, totalPromptTokens, totalCompletionTokens, totalChunksSent);
-      } else {
-        addMessage("Could not retrieve transcript for the YouTube video.", "system");
-      }
-
-      setLoading(false);
-      return;
-    }
-
-    // Default behavior for non-YouTube messages
     try {
       const response = await axios.post(`${apiBase}/api/chat`, {
         message,
