@@ -1,82 +1,78 @@
-# Getting Started with Create React App
+# Ask AI — Multi-Model Chatbot
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React single-page app for chatting with multiple [Groq](https://groq.com)-hosted
+LLMs side by side, with long-term memory powered by [Mem0](https://mem0.ai) and
+built-in YouTube transcript summarization.
+
+## Features
+
+- **Multi-model chat** — select up to 3 models and compare their responses in
+  parallel, one model per chat panel.
+- **Ask all at once** — a global input broadcasts the same prompt to every
+  active chat.
+- **Long-term memory** — relevant past exchanges are retrieved from Mem0 and
+  injected as context. Toggle **Omit Memory** to skip retrieval and storage for
+  a one-off query.
+- **YouTube summarization** — paste a YouTube link and the backend fetches the
+  transcript and summarizes it.
+- **Query stats** — per-query time, input/output token usage, and number of
+  memory chunks injected.
+
+## Architecture
+
+The app and API deploy together on Netlify:
+
+- **Frontend** — Create React App (React 19) served as static files from `build/`.
+- **Backend** — a single Netlify serverless function (`netlify/functions/api.mjs`)
+  using the `groq-sdk`. It exposes:
+  - `POST /api/chat` — runs the prompt against the selected models, handles Mem0
+    memory retrieval/storage, and detects YouTube URLs for summarization.
+  - `POST /api/youtube-transcript` — fetches a transcript for a given video ID.
+
+The available model catalog lives in `src/data/groq-models.json`.
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Runs the app in development mode at [http://localhost:3000](http://localhost:3000).
+The page reloads on changes.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in interactive watch mode.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production into the `build` folder.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Local Development
 
-### Deploy on Netlify
+The React dev server alone won't serve the `/api/*` endpoints. Two options:
 
-The app and API run together on Netlify: the React app is built and served as static files, and `/api/chat` and `/api/youtube-transcript` are handled by a serverless function.
+1. **Netlify Dev (recommended)** — run `netlify dev` to serve the React app and
+   the serverless function together, so relative `/api/*` URLs work as in
+   production. Set `GROQ_API_KEY` and `MEM0_API_KEY` in a `.env` file.
+2. **Separate API base** — if you run the API elsewhere, point the frontend at
+   it with `REACT_APP_API_URL=http://localhost:8888` in `.env`. When unset, the
+   frontend uses relative `/api/*` URLs.
+
+## Deploy on Netlify
 
 1. Push the repo to GitHub and connect the site in [Netlify](https://app.netlify.com).
-2. Build command: `npm run build` (default from `netlify.toml`).
+2. Build command and publish directory are read from `netlify.toml`
+   (`npm run build` → `build/`); functions are served from `netlify/functions`.
 3. In **Site settings → Environment variables**, add:
-   - `GROQ_API_KEY` – your Groq API key  
-   - `MEM0_API_KEY` – your Mem0 API key  
+   - `GROQ_API_KEY` — your Groq API key
+   - `MEM0_API_KEY` — your Mem0 API key
 
-No `REACT_APP_API_URL` is needed in production; the frontend uses relative `/api/*` URLs. For **local dev** with the Flask backend, set `REACT_APP_API_URL=http://localhost:5001` in `.env`.
+No `REACT_APP_API_URL` is needed in production; the frontend uses relative
+`/api/*` URLs.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Releases
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Releases are automated with [semantic-release](https://semantic-release.gitbook.io/),
+driven by [Conventional Commits](https://www.conventionalcommits.org/). On every
+push to `main`, the version is bumped, `CHANGELOG.md` is updated, and a GitHub
+Release is published. Use `feat:` / `fix:` commit prefixes to trigger version
+bumps.
