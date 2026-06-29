@@ -9,35 +9,25 @@ const ModelList = ({ selectedModels: controlledSelection, onSelectionChange }) =
   const getShortenedModelName = (modelId) => {
     const nameMap = {
       // Groq Systems
-      "compound-beta": "Compound Beta",
       "groq/compound": "Groq Compound",
       "groq/compound-mini": "Groq Compound Mini",
-  
+
       // Core Chat Models
       "llama-3.1-8b-instant": "Llama 3.1-8B Instant",
       "llama-3.3-70b-versatile": "Llama 3.3-70B Versatile",
       "meta-llama/llama-4-maverick-17b-128e-instruct": "Llama 4 Maverick 17B",
       "meta-llama/llama-4-scout-17b-16e-instruct": "Llama 4 Scout 17B",
-  
+
       // OpenAI OSS (Groq Hosted)
       "openai/gpt-oss-120b": "GPT OSS 120B",
       "openai/gpt-oss-20b": "GPT OSS 20B",
-      "openai/gpt-oss-safeguard-20b": "GPT OSS Safeguard 20B",
-  
+
       // Moonshot AI
       "moonshotai/kimi-k2-instruct": "Kimi K2 Instruct",
-      "moonshotai/kimi-k2-instruct-0905": "Kimi K2 Instruct (0905)",
-  
+
       // Alibaba Cloud
       "qwen/qwen3-32b": "Qwen 3-32B",
-  
-      // SDAIA
-      "allam-2-7b": "Allam 2 7B",
-  
-      // Optional Chat (if still enabled)
-      //"deepseek-r1-distill-llama-70b": "DeepSeek R1 Distill",
-      //"mistral-saba-24b": "Mistral Saba 24B",
-  
+
       // Default fallback
       "system": "System",
       "user": "User"
