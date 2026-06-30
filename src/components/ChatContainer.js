@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from "rea
 import Chatbot from "./Chatbot";
 import "../App.css";
 
-const ChatContainer = forwardRef(({ selectedModels, onChatRemoved }, ref) => {
+const ChatContainer = forwardRef(({ selectedModels, persona, onChatRemoved }, ref) => {
   const [chatInstances, setChatInstances] = useState([{ id: 1, name: "Chat 1", assignedModels: [] }]);
   const [inputs, setInputs] = useState({ 1: "" });
   const [sendMessages, setSendMessages] = useState({});
@@ -195,6 +195,7 @@ const ChatContainer = forwardRef(({ selectedModels, onChatRemoved }, ref) => {
             </div>
             <Chatbot
               selectedModels={chat.assignedModels}
+              persona={persona}
               onSendMessage={
                 sendMessages[chat.id]
                   ? {
