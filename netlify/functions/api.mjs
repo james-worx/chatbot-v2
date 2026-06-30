@@ -120,7 +120,10 @@ async function handleChat(body, groqClient, mem0ApiKey) {
             role: "system",
             content: `(Memory) ${memoryText}`,
           });
-          retrievedMemory.push(memoryText);
+          retrievedMemory.push({
+            memory: memoryText,
+            score: Math.round(score * 1000) / 1000,
+          });
         }
       }
     }

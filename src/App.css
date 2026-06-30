@@ -939,3 +939,14 @@ p {
 .persona-hint strong {
   color: #007bff;
 }
+
+/* Relevance score badge inside retrieved-memory blocks */
+.memory-content code {
+  background-color: #007bff;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  white-space: nowrap;
+}
