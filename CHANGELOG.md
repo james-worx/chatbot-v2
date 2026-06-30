@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/james-worx/chatbot-v2/compare/v1.2.0...v1.3.0) (2026-06-30)
+
+
+### Features
+
+* render recalled memory as a left-aligned system message ([1abdd99](https://github.com/james-worx/chatbot-v2/commit/1abdd9912cbc2b52449e4b283e607d4ab949bdd9))
+
 # [1.2.0](https://github.com/james-worx/chatbot-v2/compare/v1.1.0...v1.2.0) (2026-06-30)
 
 
