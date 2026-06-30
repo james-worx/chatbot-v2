@@ -15,7 +15,7 @@ function jsonResponse(body, status = 200) {
 }
 
 async function mem0Search(apiKey, query, userId) {
-  const res = await fetch(`${MEM0_API_BASE}/v2/memories/search`, {
+  const res = await fetch(`${MEM0_API_BASE}/v2/memories/search/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -113,7 +113,7 @@ async function handleChat(body, groqClient, mem0ApiKey) {
   if (pastMemories && pastMemories.length) {
     for (const mem of pastMemories) {
       const score = mem.score ?? 1;
-      if (score > 0.25) {
+      if (score > 0.15) {
         const memoryText = mem.memory || mem.data?.memory;
         if (memoryText) {
           history.push({
