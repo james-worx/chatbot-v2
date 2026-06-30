@@ -53,7 +53,8 @@ const Chatbot = ({ selectedModels, persona, onSendMessage }) => {
   const addMessage = useCallback((message, sender, isMemory = false) => {
     setMessages((prevMessages) => [
       ...prevMessages,
-      { sender, message, isMemory, collapsed: isMemory ? true : false },
+      // Memory blocks start expanded so the Mem0 retrieval + scores are visible.
+      { sender, message, isMemory, collapsed: false },
     ]);
   }, []);
 
@@ -104,7 +105,14 @@ const Chatbot = ({ selectedModels, persona, onSendMessage }) => {
       response.data.forEach((botResponse) => {
         if (botResponse.retrieved_memory && botResponse.retrieved_memory.length > 0 && !omitMemory) {
           const memoryMarkdown = botResponse.retrieved_memory
-            .map((mem) => `- ${mem}`)
+            .map((mem) => {
+              // Backend returns { memory, score }; tolerate legacy string form.
+              const text = typeof mem === "string" ? mem : mem.memory;
+              const score = typeof mem === "string" ? null : mem.score;
+              return score != null
+                ? `- \`relevance ${score.toFixed(3)}\` — ${text}`
+                : `- ${text}`;
+            })
             .join("\n");
           addMessage(memoryMarkdown, "memory", true);
         }
@@ -164,7 +172,7 @@ const Chatbot = ({ selectedModels, persona, onSendMessage }) => {
             {msg.isMemory ? (
               <div className="memory-container">
                 <div className="memory-header" onClick={() => toggleCollapse(index)} style={{ cursor: "pointer" }}>
-                  <span>Retrieved Memory</span>
+                  <span>🧠 Memory retrieved from Mem0 — injected as context</span>
                   <button className="collapse-btn">{msg.collapsed ? "Expand" : "Collapse"}</button>
                 </div>
                 {!msg.collapsed && <div className="memory-content"><ReactMarkdown>{msg.message}</ReactMarkdown></div>}
