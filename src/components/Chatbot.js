@@ -58,12 +58,6 @@ const Chatbot = ({ selectedModels, persona, onSendMessage }) => {
     ]);
   }, []);
 
-  const toggleCollapse = (index) => {
-    const updatedMessages = [...messages];
-    updatedMessages[index].collapsed = !updatedMessages[index].collapsed;
-    setMessages(updatedMessages);
-  };
-
   const updateQueryStats = useCallback((queryTime, tokenUsage, promptTokens, completionTokens, chunksSent) => {
     setQueryStats(prev => ({
       lastQueryTime: queryTime,
@@ -170,13 +164,15 @@ const Chatbot = ({ selectedModels, persona, onSendMessage }) => {
         {messages.map((msg, index) => (
           <div key={index} className={`message-block ${msg.isMemory ? "memory-block" : ""} ${msg.sender === "user" ? "user-block" : ""}`}>
             {msg.isMemory ? (
-              <div className="memory-container">
-                <div className="memory-header" onClick={() => toggleCollapse(index)} style={{ cursor: "pointer" }}>
-                  <span>🧠 Memory retrieved from Mem0 — injected as context</span>
-                  <button className="collapse-btn">{msg.collapsed ? "Expand" : "Collapse"}</button>
+              <>
+                <div className="sender-info">
+                  <img src="/images/system.png" alt="System" className="sender-logo" />
+                  <span className="sender-name">System</span>
                 </div>
-                {!msg.collapsed && <div className="memory-content"><ReactMarkdown>{msg.message}</ReactMarkdown></div>}
-              </div>
+                <div className="message system memory-message">
+                  <ReactMarkdown>{msg.message}</ReactMarkdown>
+                </div>
+              </>
             ) : (
               <>
                 {msg.sender !== "user" && (
