@@ -299,6 +299,25 @@ p {
   color: #666;
 }
 
+/* Recalled-memory message (left-aligned, beaver/system avatar) */
+.message.memory-message {
+  background-color: #fafafa;
+  border: 1px solid #ececec;
+  margin-left: 0;
+  margin-right: auto;
+  max-width: 85%;
+  text-align: left;
+}
+
+.message.memory-message ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.message.memory-message li {
+  margin-bottom: 4px;
+}
+
 /* Input area */
 .input-area {
   display: flex;
@@ -528,45 +547,6 @@ p {
   margin-bottom: 8px;
 }
 
-.memory-container {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.memory-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 12px;
-  font-weight: bold;
-  color: #666;
-}
-
-.collapse-btn {
-  background: none;
-  border: none;
-  color: #007bff;
-  cursor: pointer;
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-
-.collapse-btn:hover {
-  background-color: #e7f3ff;
-}
-
-.memory-content {
-  padding: 8px 12px;
-  background-color: #fafafa;
-  font-size: 12px;
-  color: #555;
-}
-
 /* Query statistics */
 .query-stats {
   padding: 8px 15px;
@@ -794,6 +774,13 @@ p {
     max-width: 90%;
   }
 
+  .message.memory-message {
+    margin-left: 0;
+    margin-right: auto;
+    max-width: 85%;
+    text-align: left;
+  }
+
   .message.model {
     font-size: 14px;
     color: #333;
@@ -941,7 +928,7 @@ p {
 }
 
 /* Relevance score badge inside retrieved-memory blocks */
-.memory-content code {
+.memory-message code {
   background-color: #007bff;
   color: #fff;
   padding: 1px 6px;
