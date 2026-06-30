@@ -3,11 +3,14 @@ import "./App.css";
 import ChatContainer from "./components/ChatContainer";
 import ModelList from "./components/ModelList";
 import LoadingScreen from "./components/LoadingScreen";
+import PersonaSelector from "./components/PersonaSelector";
+import personas from "./data/personas.json";
 
 function App() {
   const [selectedModels, setSelectedModels] = useState([]);
   const [globalInput, setGlobalInput] = useState("");
   const [omitMemory, setOmitMemory] = useState(false);
+  const [selectedPersona, setSelectedPersona] = useState(personas[0]);
   const [isLoading, setIsLoading] = useState(true);
   const chatContainerRef = useRef();
 
@@ -46,8 +49,16 @@ function App() {
           <div className="header-container">
             <h1>Ask AI</h1>
             <p>powered by Groq accelerated inference, Mem0 long-term memory</p>
+            <PersonaSelector
+              personas={personas}
+              selectedPersonaId={selectedPersona.id}
+              onSelect={setSelectedPersona}
+            />
+            <p className="persona-hint">
+              Chatting as <strong>{selectedPersona.name}</strong> — responses use {selectedPersona.name}'s memories as context.
+            </p>
           </div>
-          
+
           <div className="global-input-container">
             <div className="global-input-area">
               <input 
@@ -86,6 +97,7 @@ function App() {
             <ChatContainer
               ref={chatContainerRef}
               selectedModels={selectedModels}
+              persona={selectedPersona}
               onChatRemoved={handleChatRemoved}
             />
           </div>

@@ -877,3 +877,65 @@ p {
     height: 35px;
   }
 }
+/* Persona selector */
+.persona-selector {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.persona-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background-color: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  font-family: inherit;
+  text-align: left;
+}
+
+.persona-card:hover {
+  border-color: #b3d4ff;
+}
+
+.persona-card.active {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.persona-emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.persona-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.persona-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.persona-tagline {
+  font-size: 12px;
+  color: #777;
+}
+
+.persona-hint {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #666;
+}
+
+.persona-hint strong {
+  color: #007bff;
+}

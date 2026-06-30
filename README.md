@@ -10,9 +10,13 @@ built-in YouTube transcript summarization.
   parallel, one model per chat panel.
 - **Ask all at once** — a global input broadcasts the same prompt to every
   active chat.
+- **Selectable personas** — pick one of three characters (Aria Vega, Dr. Theo
+  Marsh, June Cole). Each has its own voice and its own isolated Mem0 memory
+  namespace, so the persona you choose decides which memories are retrieved as
+  context. See [Personas & memory](#personas--memory).
 - **Long-term memory** — relevant past exchanges are retrieved from Mem0 and
-  injected as context. Toggle **Omit Memory** to skip retrieval and storage for
-  a one-off query.
+  injected as context, scoped to the active persona. Toggle **Omit Memory** to
+  skip retrieval and storage for a one-off query.
 - **YouTube summarization** — paste a YouTube link and the backend fetches the
   transcript and summarizes it.
 - **Query stats** — per-query time, input/output token usage, and number of
@@ -30,6 +34,33 @@ The app and API deploy together on Netlify:
   - `POST /api/youtube-transcript` — fetches a transcript for a given video ID.
 
 The available model catalog lives in `src/data/groq-models.json`.
+
+## Personas & memory
+
+Because Mem0 memory is long-term and shared by the deployed API key, the app
+never writes to a single personal namespace. Instead it ships three fictional
+**personas**, defined in `src/data/personas.json`. Each persona has:
+
+- an `id` used as the Mem0 `user_id`, which isolates its memories from the others;
+- a `systemPrompt` that gives it a distinct voice; and
+- `seedMemories` — starter facts that make its memory recognisably different.
+
+Selecting a persona in the header sends its `user_id` and `system_prompt` with
+every `/api/chat` call, so retrieval, storage, and tone all switch to that
+persona. Chatting as a persona adds to that persona's memory (live read + write).
+
+### Seeding persona memories
+
+Run once after setting up Mem0 (and any time you want to reset to a clean state):
+
+```bash
+MEM0_API_KEY=your_key node scripts/seed-personas.mjs          # add seed memories
+MEM0_API_KEY=your_key node scripts/seed-personas.mjs --reset  # wipe each persona first, then seed
+```
+
+`--reset` clears every memory in each persona's namespace before seeding, which
+is the way to undo memories accumulated by public visitors. Re-running without
+`--reset` appends and may duplicate.
 
 ## Available Scripts
 

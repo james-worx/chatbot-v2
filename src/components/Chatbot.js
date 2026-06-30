@@ -3,7 +3,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import "../App.css"; // Ensure you include your CSS file
 
-const Chatbot = ({ selectedModels, onSendMessage }) => {
+const Chatbot = ({ selectedModels, persona, onSendMessage }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [queryStats, setQueryStats] = useState({
@@ -91,7 +91,9 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
       const response = await axios.post(`${apiBase}/api/chat`, {
         message,
         models: selectedModels,
-        omitMemory: omitMemory
+        omitMemory: omitMemory,
+        user_id: persona?.id,
+        system_prompt: persona?.systemPrompt
       });
 
       let totalTokens = 0;
@@ -127,7 +129,7 @@ const Chatbot = ({ selectedModels, onSendMessage }) => {
     }
 
     setLoading(false);
-  }, [selectedModels, addMessage, updateQueryStats]);
+  }, [selectedModels, persona, addMessage, updateQueryStats]);
 
   // Listen for send message events from parent
   React.useEffect(() => {

@@ -65,6 +65,7 @@ async function handleChat(body, groqClient, mem0ApiKey) {
   const message = body.message || "";
   const selectedModels = body.models || [];
   const user_id = body.user_id || "default_user";
+  const systemPrompt = body.system_prompt || "";
   const omitMemory = body.omitMemory === true;
 
   if (!message) return jsonResponse({ error: "Message is required" }, 400);
@@ -79,10 +80,13 @@ async function handleChat(body, groqClient, mem0ApiKey) {
       return jsonResponse({ error: "Failed to retrieve transcript" }, 500);
 
     const summarizationPrompt = `Summarize the key points of this YouTube video transcript:\n\n${transcript}`;
+    const summaryMessages = [];
+    if (systemPrompt) summaryMessages.push({ role: "system", content: systemPrompt });
+    summaryMessages.push({ role: "user", content: summarizationPrompt });
     const responses = [];
     for (const model of selectedModels) {
       const completion = await groqClient.chat.completions.create({
-        messages: [{ role: "user", content: summarizationPrompt }],
+        messages: summaryMessages,
         model,
       });
       const responseText = completion.choices[0].message.content;
@@ -104,6 +108,7 @@ async function handleChat(body, groqClient, mem0ApiKey) {
 
   const pastMemories = omitMemory ? [] : await mem0Search(mem0ApiKey, message, user_id);
   const history = [];
+  if (systemPrompt) history.push({ role: "system", content: systemPrompt });
   const retrievedMemory = [];
   if (pastMemories && pastMemories.length) {
     for (const mem of pastMemories) {
